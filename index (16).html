@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Student PDF Data Extractor</title>
+<style>
+:root{--bd:#e6e8f5;--tx:#1f2347;--mu:#6b7194;--pr:#5b4bff;--pk:#ec4899;--tl:#10b981;--am:#f59e0b;--er:#e11d48}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 "Segoe UI",system-ui,Roboto,sans-serif;color:var(--tx);background:linear-gradient(180deg,#f3f2ff,#f8fbff 40%);min-height:100vh}
+h2{margin:0 0 14px;font-size:22px}h3{margin:0}.sec{margin:20px 0 10px}.muted{color:var(--mu)}.small{font-size:12px}.center{text-align:center}.big{font-size:26px;font-weight:700}.nowrap{white-space:nowrap}
+.app{display:flex;min-height:100vh}.side{width:230px;background:linear-gradient(180deg,#1b1464,#4a1d96 60%,#7a2a9e);color:#fff;padding:18px 12px;position:sticky;top:0;height:100vh;flex-shrink:0}
+.brand{font-weight:800;font-size:16px;padding:6px 10px 18px;line-height:1.3}.brand small{display:block;font-weight:400;opacity:.7;font-size:11px}
+.nav{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;border:0;background:none;color:#e9e5ff;padding:10px 12px;border-radius:10px;cursor:pointer;font:inherit;margin-bottom:3px}
+.nav:hover{background:#ffffff1f}.nav.on{background:linear-gradient(90deg,#ff7ac8,#8b6bff);color:#fff;font-weight:600;box-shadow:0 6px 16px #0004}.pill{background:#fff;color:var(--er);border-radius:99px;padding:0 8px;font-size:12px;font-weight:700}
+.main{flex:1;min-width:0}.top{display:flex;gap:12px;align-items:center;padding:12px 22px;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5}
+.search{flex:1;max-width:540px;padding:10px 14px;border:1px solid var(--bd);border-radius:12px;font:inherit;background:#fff}.search:focus,input:focus,select:focus,textarea:focus{outline:2px solid #b9b2ff;border-color:var(--pr)}
+.user{margin-left:auto;display:flex;align-items:center;gap:10px}.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--pk));color:#fff;display:grid;place-items:center;font-weight:700}.user b{display:block;line-height:1.2}
+.menu{display:none}.content{padding:22px}
+.btn{border:1px solid var(--bd);background:#fff;padding:8px 15px;border-radius:10px;cursor:pointer;font:inherit;color:var(--tx)}.btn:hover:not(:disabled){background:#f1f0ff}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:linear-gradient(135deg,var(--pr),#8b5cf6);border:0;color:#fff;box-shadow:0 6px 14px #5b4bff44}.btn.primary:hover:not(:disabled){filter:brightness(1.08);background:linear-gradient(135deg,var(--pr),#8b5cf6)}
+.btn.danger{color:var(--er)}.btn.ghost{border-color:transparent;background:none}.btn.sm{padding:3px 10px;font-size:12px}.btn.good{background:linear-gradient(135deg,#059669,var(--tl));border:0;color:#fff}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:18px;box-shadow:0 6px 22px #4b3dff12;margin-bottom:14px}
+.stat{display:flex;gap:14px;align-items:center;color:#fff;border:0;margin:0}.stat .muted{color:#ffffffcc}.stat .ico{font-size:28px;background:#ffffff2e;border-radius:14px;width:54px;height:54px;display:grid;place-items:center}
+.stat:nth-child(1){background:linear-gradient(135deg,#5b4bff,#8b5cf6)}.stat:nth-child(2){background:linear-gradient(135deg,#0ea5e9,#22d3ee)}.stat:nth-child(3){background:linear-gradient(135deg,#f59e0b,#fb7185)}.stat:nth-child(4){background:linear-gradient(135deg,#10b981,#34d399)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.chip{border:1px solid var(--bd);background:#fff;border-radius:99px;padding:6px 14px;cursor:pointer;font:inherit}.chip b{background:#eeeaff;color:var(--pr);border-radius:99px;padding:0 8px;margin-left:4px;font-size:12px}
+.chip.on{background:linear-gradient(135deg,var(--pr),var(--pk));color:#fff;border:0}.chip.on b{background:#ffffff40;color:#fff}
+.drop{border:2px dashed #b9b2ff;border-radius:18px;background:linear-gradient(135deg,#fff,#f4f1ff);padding:40px 16px;text-align:center;display:grid;gap:10px;justify-items:center}.drop.on{border-color:var(--pk);background:#fff0f8}
+.progress{position:relative;height:28px;background:#e5e7f5;border-radius:99px;margin:14px 0;overflow:hidden}.progress div{height:100%;background:linear-gradient(90deg,var(--pr),var(--pk));transition:width .2s}.progress span{position:absolute;inset:0;text-align:center;line-height:28px;font-size:13px;font-weight:600;color:#1f2347}
+.notice{margin:14px 0;padding:12px 16px;background:#eefcf6;border:1px solid #b7ecd3;border-radius:12px;font-weight:500}.notice.bad{background:#fff1f2;border-color:#fecdd3}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0;flex-wrap:wrap}.bar h2{margin:0}
+.tablewrap{overflow:auto;background:#fff;border:1px solid var(--bd);border-radius:16px;max-height:66vh;box-shadow:0 6px 22px #4b3dff12}.tbl{border-collapse:collapse;width:100%}
+.tbl th,.tbl td{padding:9px 11px;border-bottom:1px solid #eef0fa;text-align:left;vertical-align:top}.tbl th{background:linear-gradient(180deg,#f3f1ff,#ece9ff);position:sticky;top:0;white-space:nowrap;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#4a3fc7}
+.tbl th.sort{cursor:pointer}.tbl tbody tr:hover td{background:#faf9ff}.addr{min-width:180px;max-width:280px}.tbl input{width:100%;min-width:110px;padding:6px 8px;border:1px solid var(--bd);border-radius:8px;font:inherit}
+.tbl input.miss{border-color:var(--am);background:#fffbeb}.tbl tr.diff td{background:#fff7ed}.nf{color:var(--er);font-size:12px;font-style:italic}
+.badge{padding:2px 10px;border-radius:99px;font-size:12px;white-space:nowrap;font-weight:600}.badge.ok{background:#d1fae5;color:#047857}.badge.warn{background:#fef3c7;color:#b45309}.badge.err{background:#ffe4e6;color:var(--er)}
+.cb{display:inline-block;min-width:26px;text-align:center;background:linear-gradient(135deg,#ede9fe,#fce7f3);color:#5b21b6;border-radius:8px;padding:0 8px;font-weight:700}
+select,input[type=number]{padding:7px 10px;border:1px solid var(--bd);border-radius:10px;font:inherit;background:#fff}
+.overlay{position:fixed;inset:0;background:#1b146488;display:grid;place-items:center;z-index:20;padding:12px}.modal{background:#fff;border-radius:18px;padding:20px;width:min(660px,100%);max-height:92vh;overflow:auto;box-shadow:0 20px 60px #0006}.modal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;margin:0}.dl dt{font-size:12px;color:var(--mu)}.dl dd{margin:0;font-weight:600}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form label{display:grid;gap:4px;font-size:12px;color:var(--mu)}.form .wide{grid-column:1/-1}.form input:not([type=checkbox]),.form textarea{padding:9px;border:1px solid var(--bd);border-radius:10px;font:14px inherit;color:var(--tx)}
+.steps{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}.step{flex:1;min-width:130px;padding:10px 14px;border-radius:12px;background:#fff;border:1px solid var(--bd);color:var(--mu);font-weight:600;text-align:center}.step.on{background:linear-gradient(135deg,var(--pr),var(--pk));color:#fff;border:0}.step.done{background:#d1fae5;color:#047857;border-color:#b7ecd3}
+@media(max-width:820px){.side{position:fixed;left:-250px;z-index:15;transition:left .2s}.side.open{left:0}.menu{display:inline-block}.form,.dl{grid-template-columns:1fr}.content{padding:12px}.user b+span{display:none}}
+</style></head>
+<body>
+<div class="app">
+  <aside id="side" class="side"></aside>
+  <div class="main">
+    <header class="top">
+      <button class="btn ghost menu" data-a="menu">☰</button>
+      <input id="q" class="search" placeholder="Search name, father, mother, admission no., PEN, mobile…" autocomplete="off">
+      <span id="cloudst" class="small muted nowrap"></span>
+      <div class="user"><div class="av">SK</div><div><b>Shivam Kumar</b><span class="muted small">School Admin</span></div></div>
+    </header>
+    <main id="content" class="content"><p class="muted">Loading…</p></main>
+  </div>
+</div>
+<div id="modal"></div>
+<script type="text/plain" id="gscode">/* Student Tool - Google Sheet storage
+   1) Google Sheet kholo > Extensions > Apps Script > yeh poora code paste karo
+   2) SECRET mein apni gupt key likho (wahi key tool ke Settings mein bhi daalna)
+   3) Deploy > New deployment > Web app > Execute as: Me | Who has access: Anyone > Deploy
+   4) Jo Web app URL mile use tool ke Settings mein daalo */
+var SECRET = 'CHANGE-THIS-SECRET-KEY';
+var COLS = ['name','father','mother','cls','section','dob','address','mobile','admissionNo','pen','aadhaar','prevSchool','remark','completed','id','createdAt','updatedAt','completedAt','udise','year'];
+function reply_(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function sh_(n){ var ss = SpreadsheetApp.getActiveSpreadsheet(); return ss.getSheetByName(n) || ss.insertSheet(n); }
+function doGet(){ return reply_({ok:true, info:'Student tool storage is running'}); }
+function doPost(e){
+  var lock = LockService.getScriptLock();
+  try {
+    var b = JSON.parse(e.postData.contents);
+    if (b.key !== SECRET) return reply_({ok:false, error:'Secret key galat hai'});
+    lock.waitLock(20000);
+    if (b.action === 'save') save_(b);
+    return reply_(load_());
+  } catch (err) {
+    return reply_({ok:false, error:String(err)});
+  } finally {
+    try { lock.releaseLock(); } catch (x) {}
+  }
+}
+function save_(b){
+  var list = b.students || [], sh = sh_('Students');
+  var rows = [COLS].concat(list.map(function(x){ return COLS.map(function(c){ var v = x[c]; return (v === undefined || v === null) ? '' : String(v); }); }));
+  sh.clear();
+  var rg = sh.getRange(1, 1, rows.length, COLS.length); rg.setNumberFormat('@'); rg.setValues(rows);
+  sh.setFrozenRows(1);
+  var m = sh_('Settings'); m.clear();
+  var meta = b.meta || {}, mr = Object.keys(meta).map(function(k){ return [k, String(meta[k] || '')]; });
+  if (mr.length) { var r2 = m.getRange(1, 1, mr.length, 2); r2.setNumberFormat('@'); r2.setValues(mr); }
+}
+function load_(){
+  var v = sh_('Students').getDataRange().getValues(), out = [];
+  if (v.length > 1) {
+    var h = v[0];
+    for (var i = 1; i < v.length; i++) {
+      var o = {};
+      for (var j = 0; j < h.length; j++) o[h[j]] = (v[i][j] === '' ? '' : String(v[i][j]));
+      if (!o.id) continue;
+      o.createdAt = Number(o.createdAt) || 0; o.updatedAt = Number(o.updatedAt) || 0; o.completedAt = Number(o.completedAt) || 0;
+      o.completed = (o.completed === 'true');
+      out.push(o);
+    }
+  }
+  var meta = {}, m = sh_('Settings').getDataRange().getValues();
+  m.forEach(function(r){ if (r[0]) meta[r[0]] = String(r[1]); });
+  return {ok:true, students:out, meta:meta};
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/*CORE*/
+const FIELDS=[['name','Student Name'],['father','Father Name'],['mother','Mother Name'],['cls','Class'],['section','Section'],['dob','DOB'],['address','Address'],['mobile','Mobile'],['admissionNo','Admission No.'],['pen','PEN (Permanent Education No.)'],['aadhaar','Aadhaar No.']];
+const emptyDraft=()=>({name:'',father:'',mother:'',cls:'',section:'',dob:'',address:'',mobile:'',admissionNo:'',aadhaar:'',udise:'',pen:'',year:'',remark:'',prevSchool:''});
+const clean=s=>String(s==null?'':s).replace(/[\u0000-\u001f\u007f<>]/g,' ').replace(/\s+/g,' ').trim();
+const blankNA=s=>/^(na|n\/a|-|null)$/i.test(s)?'':s;
+function itemsToText(items){
+  const rows=[];
+  for(const it of items){ if(!it.str.trim())continue; const y=it.transform[5],x=it.transform[4];
+    let r=rows.find(r=>Math.abs(r.y-y)<3); if(!r){r={y,parts:[]};rows.push(r);} r.parts.push({x,s:it.str}); }
+  return rows.sort((a,b)=>b.y-a.y).map(r=>r.parts.sort((a,b)=>a.x-b.x).map(p=>p.s).join(' ')).join('\n');
+}
+const STOPS=[/General Information of Student/,/Gender \(as/,/Mother Tongue/,/Date of Birth/,/Permanent Education Number/,/Social Category/,/Mother['’]s Name/,/Minority Group/,/Father['’]s Name/,/Whether BPL/,/Guardian['’]s Name/,/Whether Antyodaya/,/AADHAAR Number of Student/,/Whether belongs to EWS/,/Name of Student as per/,/Whether CWSN/,/Address/,/Type of Impairments/,/Pincode/,/Indian Nationality/,/Mobile Number/,/Alternate Mobile/,/Is Child Identified/,/Contact email/,/Enrolment Details/,/Admission Number in Present/,/Admission Date/,/Class\/Section Roll/,/Medium of Instruction/,/Class\s*:/,/Section\s*:/];
+function after(t,label){const m=label.exec(t); if(!m)return ''; const rest=t.slice(m.index+m[0].length); let end=rest.length;
+  for(const s of STOPS){const i=rest.search(s); if(i>=0&&i<end)end=i;} return blankNA(clean(rest.slice(0,end)));}
+const first=(t,re)=>clean((re.exec(t)||[])[1]||'');
+function parseStudentText(raw){
+  const t=raw.replace(/\s+/g,' '); const d=emptyDraft();
+  d.year=first(t,/Academic Year\s*:\s*(\d{4}-\d{2,4})/); d.udise=first(t,/UDISE Code\s*:\s*(\d+)/);
+  d.name=first(t,/Student Name\s*:\s*(.+?)\s+Class\s*:/); d.cls=first(t,/\bClass\s*:\s*(\S+)\s+Section\s*:/); d.section=first(t,/Section\s*:\s*(\S+)/);
+  d.mother=after(t,/Mother['’]s Name/); d.father=after(t,/Father['’]s Name/);
+  d.dob=first(t,/Date of Birth[^\d]*?(\d{2}\/\d{2}\/\d{4})/); d.pen=first(t,/Permanent Education Number\s*(\d+)/);
+  d.mobile=first(t,/(?<!Alternate )Mobile Number\s*\(of[^)]*\)\s*(\d{10})\b/);
+  d.aadhaar=first(t,/AADHAAR Number of Student\s*([\d*Xx-]{8,16})/).replace(/-/g,''); if(!/^[\d*Xx]{8,12}$/.test(d.aadhaar))d.aadhaar='';
+  d.admissionNo=after(t,/Admission Number in Present School/); if(!/^[\w\/-]{1,20}$/.test(d.admissionNo))d.admissionNo='';
+  const addr=after(t,/\bAddress\b/),pin=first(t,/Pincode\s*(\d{6})/); d.address=addr?(pin?addr+' - '+pin:addr):'';
+  const missing=FIELDS.map(f=>f[0]).filter(k=>!d[k]);
+  return {data:d,missing,recognised:/Student Name\s*:/.test(t)};
+}
+const CRITICAL=['name','cls','dob','admissionNo'];
+const statusFor=(missing,ocr,rec)=>(ocr||!rec||missing.some(k=>CRITICAL.includes(k)))?'review':'ok';
+/* class order: Nursery/LKG/UKG, then I, II, III ... XII */
+const ROMAN={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10,XI:11,XII:12};
+function classRank(c){const t=clean(c).toUpperCase().replace(/^(CLASS|STD)\s*/,''); const p=['PRE-NURSERY','NURSERY','LKG','UKG','KG'].indexOf(t);
+  if(p>=0)return p-10; if(ROMAN[t])return ROMAN[t]; const n=parseInt(t,10); return isNaN(n)?99:n;}
+const admCmp=(a,b)=>{const x=String(a.admissionNo||'').trim(),y=String(b.admissionNo||'').trim(); if(!x&&!y)return 0; if(!x)return 1; if(!y)return -1; return x.localeCompare(y,undefined,{numeric:true});};
+/* list/export order: class -> Admission Number sequence (1,2,3...10,11) -> section -> name. Upload order does not matter. */
+const compareStudents=(a,b)=>classRank(a.cls)-classRank(b.cls)||a.cls.localeCompare(b.cls)||admCmp(a,b)||a.section.localeCompare(b.section)||a.name.localeCompare(b.name);
+const classesOf=l=>[...new Set(l.map(s=>s.cls).filter(Boolean))].sort((a,b)=>classRank(a)-classRank(b)||a.localeCompare(b));
+/* duplicates */
+const nz=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function findDuplicate(d,list){
+  if(d.admissionNo){const e=list.find(s=>nz(s.admissionNo)===nz(d.admissionNo)); if(e)return {existing:e,reason:'Same Admission Number ('+d.admissionNo+')'};}
+  if(d.pen){const e=list.find(s=>nz(s.pen)===nz(d.pen)); if(e)return {existing:e,reason:'Same PEN ('+d.pen+')'};}
+  if(d.name&&d.dob){const e=list.find(s=>nz(s.name)===nz(d.name)&&s.dob===d.dob&&(!s.father||!d.father||nz(s.father)===nz(d.father))); if(e)return {existing:e,reason:'Same Student Name, Date of Birth and Father Name'};}
+  return null;
+}
+const mergeInto=(e,d)=>{const o={...e}; for(const k in d) if(d[k])o[k]=d[k]; return o;};
+/* export */
+const maskAadhaar=a=>{const l=String(a||'').replace(/\D/g,'').slice(-4); return l?'XXXX-XXXX-'+l:'';};
+const HEADERS=['Sr. No.','Student Name','Father Name','Mother Name','Class','Section','DOB','Address','Mobile Number','Admission Number','PEN (Permanent Education No.)','Aadhaar Number','Previous Year School Name','Remark'];
+const safeCell=v=>(/^[=+\-@]/.test(v)&&!/^[-\d]+$/.test(v))?"'"+v:v;
+const toRows=(list,reveal)=>list.map((s,i)=>[String(i+1),s.name,s.father,s.mother,s.cls,s.section,s.dob,s.address,s.mobile,s.admissionNo,s.pen||'',reveal?s.aadhaar:maskAadhaar(s.aadhaar),s.prevSchool||'',s.remark||''].map(safeCell));
+function makeSheet(XL,list,reveal){
+  const ws=XL.utils.aoa_to_sheet([HEADERS,...toRows(list,reveal)]);
+  Object.keys(ws).filter(k=>k[0]!=='!').forEach(k=>{ws[k].t='s';ws[k].v=String(ws[k].v);delete ws[k].z;});
+  ws['!cols']=HEADERS.map((h,i)=>({wch:(i===7||i>=12)?40:Math.max(12,h.length+2)})); return ws;
+}
+function makeWorkbook(XL,list,reveal,mode,title){
+  const wb=XL.utils.book_new(), add=(l,n)=>XL.utils.book_append_sheet(wb,makeSheet(XL,l,reveal),String(n).replace(/[\\\/?*\[\]:]/g,'-').slice(0,31));
+  const byAdm=l=>[...l].sort((a,b)=>admCmp(a,b)||compareStudents(a,b));
+  if(mode==='single'||mode==='both')add(byAdm(list),title||'All Classes'); /* all classes, one sheet, serial by Admission No. */
+  if(mode==='classwise'||mode==='both'){
+    for(const c of classesOf(list))add(list.filter(s=>s.cls===c).sort(compareStudents),'Class '+c);
+    const none=list.filter(s=>!s.cls); if(none.length)add(none.sort(compareStudents),'No Class');
+  }
+  return wb;
+}
+function toCsv(list,reveal){
+  const text=new Set([8,9,10,11]); const q=(v,i)=>(text.has(i)&&/^0\d*$/.test(v))?'="'+v+'"':'"'+v.replace(/"/g,'""')+'"';
+  return '\uFEFF'+[HEADERS.map(h=>'"'+h+'"').join(','),...toRows(list,reveal).map(r=>r.map(q).join(','))].join('\r\n');
+}
+/*ENDCORE*/
+/* ---------- storage: IndexedDB (swap this block for fetch() calls to use a real backend) ---------- */
+const DB={
+  open(){return new Promise((res,rej)=>{const r=indexedDB.open('student-pdf-extractor',1);
+    r.onupgradeneeded=()=>{r.result.createObjectStore('students',{keyPath:'id'});r.result.createObjectStore('kv');};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});},
+  async run(store,mode,f){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(store,mode);const rq=f(tx.objectStore(store));
+    tx.oncomplete=()=>{db.close();res(rq?rq.result:undefined);};tx.onerror=()=>rej(tx.error);});},
+  list:async()=>(await DB.run('students','readonly',s=>s.getAll())).sort((a,b)=>a.createdAt-b.createdAt),
+  async putMany(l){l.forEach(x=>{x.updatedAt=Date.now();});await DB.run('students','readwrite',s=>{l.forEach(x=>s.put(x));});Cloud.schedule();},
+  async remove(id){await DB.run('students','readwrite',s=>{s.delete(id);});Cloud.schedule();},
+  replaceAll:l=>DB.run('students','readwrite',s=>{s.clear();l.forEach(x=>s.put(x));}),
+  async clear(){await DB.run('students','readwrite',s=>{s.clear();});await DB.run('kv','readwrite',s=>{s.clear();});},
+  async get(k,fb){const v=await DB.run('kv','readonly',s=>s.get(k));return v==null?fb:v;},
+  set:(k,v)=>DB.run('kv','readwrite',s=>{s.put(v,k);}),
+};
+
+/* ---------- Cloud storage: Google Sheet (Apps Script web app) + local copy ---------- */
+const mergeLists=(a,b)=>{const m=new Map();for(const x of b)m.set(x.id,x);for(const x of a){const o=m.get(x.id);if(!o||(x.updatedAt||x.createdAt||0)>=(o.updatedAt||o.createdAt||0))m.set(x.id,x);}return [...m.values()].sort((p,q)=>(p.createdAt||0)-(q.createdAt||0));};
+const fixStu=x=>({...emptyDraft(),...x,createdAt:Number(x.createdAt)||0,updatedAt:Number(x.updatedAt)||0,completed:x.completed===true||x.completed==='true',completedAt:Number(x.completedAt)||0});
+function setCloudSt(st){
+  const el=$('cloudst');if(!el)return;
+  if(!Cloud.on()){el.textContent='💾 Sirf is browser mein';el.title='Settings mein Cloud connect karo';return;}
+  const t=Cloud.last?new Date(Cloud.last).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'';
+  el.textContent=st==='err'?'⚠ Cloud save nahi hua (dobara try karega)':st==='busy'?'☁ Saving…':Cloud.dirty?'☁ Save hone wala hai…':'☁ Saved '+t;
+}
+const Cloud={cfg:{url:'',key:''},loaded:false,busy:false,again:false,dirty:false,last:0,err:'',timer:null,
+  on:()=>!!(Cloud.cfg.url&&Cloud.cfg.key),
+  async call(action,payload={}){
+    let r,j;
+    try{r=await fetch(Cloud.cfg.url,{method:'POST',body:JSON.stringify({key:Cloud.cfg.key,action,...payload}),redirect:'follow'});}
+    catch(e){throw new Error('Internet ya URL check karo');}
+    try{j=await r.json();}catch(e){throw new Error('URL galat hai, ya deployment mein "Who has access: Anyone" nahi hai');}
+    if(!j.ok)throw new Error(j.error||'Cloud error');return j;},
+  schedule(){
+    if(!Cloud.on())return;Cloud.dirty=true;DB.set('cloudDirty',true);setCloudSt();
+    if(!Cloud.loaded)return;clearTimeout(Cloud.timer);Cloud.timer=setTimeout(()=>Cloud.push(),1500);},
+  async push(){
+    if(!Cloud.on()||!Cloud.loaded)return;if(Cloud.busy){Cloud.again=true;return;}
+    Cloud.busy=true;setCloudSt('busy');
+    try{await Cloud.call('save',{students:S.students.slice().sort(compareStudents),meta:{school:S.pdf.school,session:S.pdf.session}});
+      Cloud.dirty=false;await DB.set('cloudDirty',false);Cloud.last=Date.now();Cloud.err='';setCloudSt();}
+    catch(e){Cloud.err=e.message;setCloudSt('err');clearTimeout(Cloud.timer);Cloud.timer=setTimeout(()=>Cloud.push(),30000);}
+    finally{Cloud.busy=false;if(Cloud.again){Cloud.again=false;Cloud.schedule();}}},
+  /* startup: cloud is the master copy. first/manual: merge both (nothing is lost). */
+  async sync(mode){
+    const r=await Cloud.call('load'),cloud=(r.students||[]).map(fixStu),dirty=await DB.get('cloudDirty',false);
+    let list,needPush=false;
+    if(mode==='startup'&&!dirty&&!(cloud.length===0&&S.students.length>0))list=cloud.sort((p,q)=>p.createdAt-q.createdAt);
+    else{list=mergeLists(S.students,cloud);needPush=true;}
+    await DB.replaceAll(list);S.students=list;
+    const m=r.meta||{};if(m.school&&!S.pdf.school)S.pdf.school=m.school;if(m.session&&(!S.pdf.session||S.pdf.session==='2026-27'))S.pdf.session=m.session;
+    await DB.set('pdfopt',{school:S.pdf.school,session:S.pdf.session});
+    Cloud.loaded=true;Cloud.last=Date.now();
+    if(needPush){Cloud.dirty=true;await Cloud.push();}else{Cloud.dirty=false;setCloudSt();}}};
+async function cloudInit(){if(!Cloud.on())return;try{await Cloud.sync('startup');}catch(e){Cloud.err=e.message;Cloud.loaded=true;setCloudSt('err');}if(!S.pending.length)render();}
+window.addEventListener('online',()=>{if(Cloud.on()&&Cloud.dirty)Cloud.push();});
+const GS_CODE=()=>($('gscode')||{}).textContent||'';
+function cloudCard(){
+  const on=Cloud.on(),c=S.cl;
+  return `<div class="card"><h3>☁️ Cloud Storage (Google Sheet)</h3>
+  <p class="${on?'':'muted'}">${on?`<b>Connected ✓</b> — har badlav apne aap aapki Google Sheet mein save hota hai${Cloud.last?' (last: '+new Date(Cloud.last).toLocaleString()+')':''}${Cloud.err?'<br><span class="nf">⚠ '+esc(Cloud.err)+'</span>':''}`:'Connected nahi hai. Abhi data sirf is browser mein hai — browser/history clear karne par ud sakta hai. Neeche se ek baar setup kar lo.'}</p>
+  ${c.msg?`<div class="notice${c.bad?' bad':''}">${esc(c.msg)}</div>`:''}
+  <div class="form"><label class="wide">Web App URL<input data-cl="url" value="${esc(c.url)}" placeholder="https://script.google.com/macros/s/.../exec"></label>
+  <label>Secret key<input data-cl="key" value="${esc(c.key)}" placeholder="wahi key jo script mein likhi"></label><div></div>
+  <div class="wide"><button class="btn primary" data-a="clconnect">${on?'Update & Sync':'Connect & Sync'}</button> <button class="btn" data-a="clsync" ${on?'':'disabled'}>Sync now</button> <button class="btn danger" data-a="cloff" ${on?'':'disabled'}>Disconnect</button></div></div>
+  <details style="margin-top:12px"><summary><b>Setup kaise karein (ek baar, 5 minute)</b></summary>
+  <ol class="small"><li>Naya <b>Google Sheet</b> banao (sheets.new).</li><li>Menu: <b>Extensions → Apps Script</b>. Purana code hata ke neeche wala code paste karo.</li><li>Code mein <code>SECRET</code> ki jagah apni gupt key likho (kuch bhi lamba text).</li><li><b>Deploy → New deployment → Web app</b>. <i>Execute as: Me</i>, <i>Who has access: Anyone</i> chuno, Deploy dabao (permission allow karo).</li><li>Jo <b>Web app URL</b> mile use upar daalo, saath mein wahi Secret key. <b>Connect &amp; Sync</b> dabao.</li></ol>
+  <button class="btn sm" data-a="copygs">📋 Copy Apps Script code</button><textarea id="gsview" readonly rows="6" style="width:100%;margin-top:8px;font:12px monospace">${esc(GS_CODE())}</textarea>
+  <p class="muted small">URL aur Secret key kisi ko mat batao. Naye computer/phone par bas yahi URL + key daalo, poora data wapas aa jayega.</p></details>
+  <h3 class="sec">Backup file</h3><p class="muted small">Cloud ke alawa ek backup file bhi download karke rakh sakte ho (computer/pendrive/WhatsApp par).</p>
+  <button class="btn" data-a="bkdl">⬇️ Download backup (.json)</button> <button class="btn" data-a="bkpick">⬆️ Restore from backup</button><input id="bkfile" type="file" accept=".json,application/json" hidden></div>`;
+}
+
+const uid=()=>crypto.randomUUID();
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id);
+
+/* ---------- PDF extraction (real, in-browser) ---------- */
+const fail=(fileName,error)=>({tempId:uid(),fileName,status:'error',error,missing:[],data:emptyDraft(),usedOcr:false});
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+async function ocrPage(page){
+  const vp=page.getViewport({scale:2.5});const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+  await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+  if(!window.Tesseract)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js');
+  return (await Tesseract.recognize(c,'eng')).data.text;
+}
+async function extractPdf(file,maxMb){
+  if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name))return fail(file.name,'Only PDF files are allowed');
+  if(file.size>maxMb*1048576)return fail(file.name,'File is larger than '+maxMb+' MB');
+  if(!window.pdfjsLib)return fail(file.name,'PDF library not loaded (internet needed once)');
+  try{
+    const buf=await file.arrayBuffer();
+    if(new TextDecoder().decode(buf.slice(0,5))!=='%PDF-')return fail(file.name,'Unable to read PDF');
+    const doc=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;let text='';
+    for(let i=1;i<=Math.min(doc.numPages,3);i++){const p=await doc.getPage(i);text+=itemsToText((await p.getTextContent()).items)+'\n';}
+    let ocr=false;
+    if(text.replace(/\s/g,'').length<40){try{text=await ocrPage(await doc.getPage(1));ocr=true;}catch(e){return fail(file.name,'Unable to read PDF (OCR failed)');}}
+    const {data,missing,recognised}=parseStudentText(text);
+    return {tempId:uid(),fileName:file.name,status:statusFor(missing,ocr,recognised),missing,data,usedOcr:ocr};
+  }catch(e){return fail(file.name,'Unable to read PDF');}
+}
+
+/* ---------- state ---------- */
+const S={view:'dash',students:[],dups:[],stats:{pdfs:0,dups:0},settings:{reveal:false,maxMb:10},pending:[],prog:null,msg:'',msgBad:false,
+  q:'',cls:'',sec:'',sort:{k:'cls',dir:1},page:0,size:25,xcls:'',xmode:'both',show:false,drag:false,batch:{ids:[],saved:false,completed:false},remDraft:{},remAll:false};
+S.cl={url:'',key:'',msg:'',bad:false};
+S.pdf={rows:[],src:'',cls:'',status:'',ord:'class',school:'',session:'2026-27',msg:'',bad:false};
+const NAV=[['dash','📊','Dashboard'],['up','📤','1. Add Students'],['rem','📝','2. Remarks'],['done','✅','3. Complete'],['list','🎓','Student List'],['dup','⚠️','Duplicates'],['exp','⬇️','Export'],['pdf','🖨️','A4 PDF Profiles'],['set','⚙️','Settings']];
+const saveBatch=()=>DB.set('batch',S.batch), saveDups=()=>DB.set('dups',S.dups), saveStats=()=>DB.set('stats',S.stats);
+const nf='<span class="nf">Field not found</span>';
+const aad=(s,show)=>esc(show?s.aadhaar:maskAadhaar(s.aadhaar));
+
+
+/* ---------- A4 PDF profiles: read Excel -> designed PDF (blank boxes where data is missing) ---------- */
+const PFLD=[['name','Student Name'],['dob','DOB'],['father','Father Name'],['mother','Mother Name'],['mobile','Mobile'],['aadhaar','Aadhaar'],['address','Address'],['cls','Class'],['section','Section'],['gender','Gender'],['admissionNo','Admission No.'],['admDate','Admission Date'],['pen','PEN'],['prevSchool','Previous School'],['remark','Remark']];
+const HMAP=[['name',/^(student\s*name|name)\b/],['father',/father/],['mother',/mother/],['cls',/^class/],['section',/^sec/],['dob',/dob|birth/],['gender',/gender|^sex/],['address',/address/],['mobile',/mobile|phone/],['admDate',/admission\s*date|date\s*of\s*admission|^adm\.?\s*date/],['admissionNo',/admission|^adm\.?\s*no/],['pen',/\bpen\b|permanent/],['aadhaar',/aadhaar|aadhar/],['prevSchool',/previous|prev\.?\s*school/],['remark',/remark/],['status',/^status$/],['idStatus',/id\s*card/]];
+const ROMANS=Object.keys(ROMAN);
+function normCls(c){const v=clean(c),t=v.toUpperCase().replace(/^(CLASS|STD)\s*/,'').replace(/^(\d+)(ST|ND|RD|TH)$/,'$1');const n=ROMAN[t]||(/^\d+$/.test(t)?+t:0);return(n>=1&&n<=12)?ROMANS[n-1]:v;}
+const isoToDmy=v=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(v);return m?`${m[3]}/${m[2]}/${m[1]}`:v;};
+const unq=v=>String(v||'').replace(/^['\u2018\u2019`]+\s*/,'').trim();
+function normRow(o){
+  o.cls=normCls(o.cls);o.dob=isoToDmy(o.dob);o.admDate=isoToDmy(o.admDate);
+  for(const k of ['mobile','admissionNo','pen']){o[k]=unq(o[k]);if(/^0+$/.test(o[k]))o[k]='';}
+  let a=unq(o.aadhaar);
+  if(/^[\d\s-]+$/.test(a)){a=a.replace(/\D/g,'');a=(!a||/^0+$/.test(a))?'':(a.length>=4&&!S.settings.reveal?maskAadhaar(a):a);}
+  o.aadhaar=a;return o;
+}
+async function readStudentSheet(file){
+  if(!window.XLSX)throw new Error('xlsx');
+  const buf=await file.arrayBuffer();
+  const wb=/\.csv$/i.test(file.name)?XLSX.read(new TextDecoder('utf-8').decode(buf),{type:'string',raw:true}):XLSX.read(buf,{type:'array',raw:false});
+  const out=[],seen=new Set();
+  for(const name of wb.SheetNames){
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,raw:false,defval:''});if(!rows.length)continue;
+    const idx={};rows[0].forEach((h,i)=>{const t=String(h).toLowerCase().trim();for(const [k,re] of HMAP)if(idx[k]===undefined&&re.test(t)){idx[k]=i;break;}});
+    if(idx.name===undefined)continue;
+    for(const r of rows.slice(1)){
+      const o={...emptyDraft(),gender:'',admDate:'',status:'',idStatus:''};for(const k in idx)o[k]=blankNA(clean(r[idx[k]]));
+      if(!o.name&&!o.admissionNo)continue;normRow(o);
+      const key=nz(o.admissionNo)+'|'+nz(o.name)+'|'+o.dob;if(seen.has(key))continue;seen.add(key);out.push(o);
+    }
+  }
+  return out;
+}
+const pdfRows=()=>S.pdf.rows.filter(x=>(!S.pdf.cls||x.cls===S.pdf.cls)&&(!S.pdf.status||x.status===S.pdf.status)).sort(S.pdf.ord==='adm'?(a,b)=>admCmp(a,b)||compareStudents(a,b):compareStudents);
+function vPdf(){
+  const P=S.pdf,rows=pdfRows(),cl=classesOf(P.rows),sts=[...new Set(P.rows.map(x=>x.status).filter(Boolean))],miss=r=>PFLD.filter(f=>!r[f[0]]).map(f=>f[1]);
+  return `<h2>A4 PDF Profiles</h2>
+  <div class="card"><b>Step 1: Excel file upload karo</b> <span class="muted small">(is tool ki Export file, ya school software ki CSV — columns apne aap pehchan liye jate hain)</span>
+  <div class="bar"><span><button class="btn primary" data-a="pickx">📂 Choose Excel File</button><input id="pdffile" type="file" accept=".xlsx,.xls,.csv" hidden> <button class="btn" data-a="usestored" ${S.students.length?'':'disabled'}>Ya is tool ke students use karo (${S.students.length})</button></span></div>
+  ${P.msg?`<div class="notice${P.bad?' bad':''}">${esc(P.msg)}</div>`:''}</div>
+  ${P.rows.length?`<div class="card"><b>Step 2: Options</b><div class="form" style="margin-top:10px">
+    <label>School ka naam (PDF ke header mein)<input data-po="school" value="${esc(P.school)}" placeholder="School name / विद्यालय का नाम"></label>
+    <label>Session<input data-po="session" value="${esc(P.session)}" placeholder="2026-27"></label>
+    <label>Kaunsi class<select data-psel="cls"><option value="">All classes</option>${cl.map(c=>`<option value="${esc(c)}"${P.cls===c?' selected':''}>Class ${esc(c)} (${P.rows.filter(x=>x.cls===c).length})</option>`).join('')}</select></label>
+    <label>Order<select data-psel="ord"><option value="class"${P.ord==='class'?' selected':''}>Class-wise, phir Admission No. ke sequence mein</option><option value="adm"${P.ord==='adm'?' selected':''}>Sirf Admission No. ke sequence mein</option></select></label>
+    ${sts.length?`<label>Status (file ke hisaab se)<select data-psel="status"><option value="">All</option>${sts.map(c=>`<option value="${esc(c)}"${P.status===c?' selected':''}>${esc(c)} (${P.rows.filter(x=>x.status===c).length})</option>`).join('')}</select></label>`:''}</div>
+    <div class="bar"><span class="muted small">Har student ka 1 A4 page. Jo detail Excel mein nahi hai, wahan khali box chhoot jayega (haath se bharne ke liye).</span>
+    <button class="btn primary" data-a="genpdf" ${rows.length?'':'disabled'}>⬇️ Generate A4 PDF (${rows.length} pages)</button></div></div>
+  <h3 class="sec">Preview (${rows.length})</h3><div class="tablewrap"><table class="tbl"><thead><tr><th>Sr.</th><th>Admission No.</th><th>Student Name</th><th>Class</th>${sts.length?'<th>Status</th>':''}<th>Khali rahne wale boxes</th></tr></thead><tbody>
+  ${rows.map((r,i)=>{const m=miss(r);return `<tr><td>${i+1}</td><td>${esc(r.admissionNo)}</td><td><b>${esc(r.name)}</b></td><td>${esc(r.cls)} ${esc(r.section)}</td>${sts.length?`<td>${esc(r.status)}</td>`:''}<td>${m.length?`<span class="badge warn">${m.length}</span> <span class="small muted">${esc(m.join(', '))}</span>`:'<span class="badge ok">Sab bhara hai</span>'}</td></tr>`;}).join('')}</tbody></table></div>`:''}`;
+}
+const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+function buildProfilePdf(rows,opt){
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'}),K=4,MM=0.352778,cv=document.createElement('canvas'),cx=cv.getContext('2d'),cache=new Map();
+  doc.setProperties({title:'Student Profiles'});
+  const needImg=t=>/[^\u0000-\u00ff]/.test(t);
+  const fnt=(sz,b)=>`${b?'bold ':''}${sz*K}px "Noto Sans Devanagari","Nirmala UI","Mangal","Segoe UI",Arial,sans-serif`;
+  const mw=(t,sz,b)=>{if(needImg(t)){cx.font=fnt(sz,b);return cx.measureText(t).width/K*MM;}doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);return doc.getTextWidth(t);};
+  /* text: normal text is real PDF text; Hindi / special characters are drawn as small crisp images */
+  const T=(t,x,y,o={})=>{t=String(t||'');if(!t)return;const sz=o.size||10,b=!!o.bold,col=o.color||'#111111',al=o.align||'left';
+    if(needImg(t)){const key=t+'|'+sz+'|'+b+'|'+col;let im=cache.get(key);
+      if(!im){const wpx=Math.ceil((cx.font=fnt(sz,b),cx.measureText(t).width))+4,hpx=Math.ceil(sz*K*1.6);cv.width=wpx;cv.height=hpx;cx.font=fnt(sz,b);cx.fillStyle=col;cx.textBaseline='alphabetic';cx.fillText(t,2,sz*K*1.2);
+        im={url:cv.toDataURL('image/png'),w:wpx/K*MM,h:hpx/K*MM};cache.set(key,im);}
+      const xx=al==='right'?x-im.w+0.5:al==='center'?x-im.w/2:x-0.5;doc.addImage(im.url,'PNG',xx,y-sz*1.2*MM,im.w,im.h,key);return;}
+    doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...rgb(col));doc.text(t,x,y,{align:al});};
+  const fit=(t,maxW,sz,b,min)=>{while(sz>min&&mw(t,sz,b)>maxW)sz-=0.5;return sz;};
+  const wrap=(t,maxW,sz,b)=>{const ws=t.split(' '),ls=[];let cur='';for(const w of ws){const n=cur?cur+' '+w:w;if(cur&&mw(n,sz,b)>maxW){ls.push(cur);cur=w;}else cur=n;}if(cur)ls.push(cur);return ls;};
+  const dash=(x1,y,x2)=>{doc.setDrawColor(...rgb('#c9cbe3'));doc.setLineWidth(.2);doc.setLineDashPattern([.8,.9],0);doc.line(x1,y,x2,y);doc.setLineDashPattern([],0);};
+  const sec=(title,y)=>{T(title,12,y+4.6,{size:9.5,bold:true,color:'#111111'});doc.setDrawColor(...rgb('#6b7194'));doc.setLineWidth(.4);doc.line(12,y+6.2,198,y+6.2);};
+  const box=(x,y,w,h,label,val,multi)=>{
+    doc.setFillColor(255,255,255);doc.setDrawColor(...rgb('#8a8fb5'));doc.setLineWidth(.3);doc.roundedRect(x,y,w,h,1.6,1.6,'FD');
+    T(label,x+3,y+4,{size:6.5,color:'#6b7194'});val=clean(val);
+    if(!multi){if(val){const sz=fit(val,w-6,11.5,true,7);let t=val;while(mw(t,sz,true)>w-6&&t.length>3)t=t.slice(0,-2);T(t+(t!==val?'...':''),x+3,y+h-3.8,{size:sz,bold:true});}else dash(x+3,y+h-4,x+w-3);}
+    else{const sz=10,lh=4.8,mx=Math.max(1,Math.floor((h-8)/lh));
+      if(val)wrap(val,w-6,sz,true).slice(0,mx).forEach((l,k)=>T(l,x+3,y+10+k*lh,{size:sz,bold:true}));else for(let k=0;k<mx;k++)dash(x+3,y+10.5+k*lh,x+w-3);}};
+  rows.forEach((r,i)=>{
+    if(i)doc.addPage();
+    doc.setDrawColor(...rgb('#9a9fb5'));doc.setLineWidth(.3);doc.rect(7,7,196,283,'S');
+    /* simple header: no filled colour (saves ink) */
+    T('STUDENT PROFILE',12,20,{size:18,bold:true,color:'#111111'});T('छात्र विवरण पत्र',12,28,{size:11,color:'#4a4f7a'});
+    const sch=clean(opt.school);if(sch)wrap(sch,95,11,true).slice(0,2).forEach((l,k)=>T(l,198,17+k*5.5,{size:11,bold:true,color:'#111111',align:'right'}));
+    if(clean(opt.session))T('Session: '+clean(opt.session),198,29,{size:10,color:'#4a4f7a',align:'right'});
+    doc.setDrawColor(...rgb('#1f2347'));doc.setLineWidth(.5);doc.line(12,34,198,34);
+    /* hero: name, chips, photo */
+    doc.setDrawColor(...rgb('#9a9fb5'));doc.setLineWidth(.3);doc.setLineDashPattern([1,1],0);doc.rect(165,44,33,40,'S');doc.setLineDashPattern([],0);
+    T('PHOTO',181.5,62,{size:9,bold:true,color:'#9a9fc4',align:'center'});T('फोटो',181.5,68,{size:9,color:'#9a9fc4',align:'center'});
+    const nm=clean(r.name);if(nm)T(nm,12,55,{size:fit(nm,148,20,true,11),bold:true});
+    let cx0=12,cy0=61;
+    [r.cls&&'Class '+r.cls,r.section&&'Section '+r.section,r.admissionNo&&'Adm. No. '+r.admissionNo,'Sr. No. '+(i+1)].filter(Boolean).forEach(c=>{
+      const w=mw(c,9,true)+8;if(cx0+w>160){cx0=12;cy0+=10;}
+      doc.setDrawColor(...rgb('#6b7194'));doc.setLineWidth(.3);doc.roundedRect(cx0,cy0,w,8,2,2,'S');T(c,cx0+w/2,cy0+5.6,{size:9,bold:true,color:'#111111',align:'center'});cx0+=w+3;});
+    /* details */
+    const A=12,B=107,W2=91;
+    sec('PERSONAL DETAILS  /  व्यक्तिगत विवरण',88);
+    box(A,98,W2,14,'Student Name  /  छात्र का नाम',r.name);box(B,98,W2,14,'Date of Birth  /  जन्म तिथि',r.dob);
+    box(A,115,W2,14,"Father's Name  /  पिता का नाम",r.father);box(B,115,W2,14,"Mother's Name  /  माता का नाम",r.mother);
+    box(A,132,W2,14,'Mobile No.  /  मोबाइल नंबर',r.mobile);box(B,132,W2,14,'Aadhaar No.  /  आधार नंबर',r.aadhaar);
+    box(A,149,186,18,'Address  /  पता',r.address,true);
+    sec('SCHOOL DETAILS  /  विद्यालय विवरण',172);
+    const C1=12,C2=76,C3=140,W3=58;
+    box(C1,182,W3,14,'Class  /  कक्षा',r.cls);box(C2,182,W3,14,'Section  /  अनुभाग',r.section);box(C3,182,W3,14,'Gender  /  लिंग',r.gender);
+    box(C1,199,W3,14,'Admission No.  /  प्रवेश संख्या',r.admissionNo);box(C2,199,W3,14,'Admission Date  /  प्रवेश तिथि',r.admDate);box(C3,199,W3,14,'PEN  /  स्थायी शिक्षा संख्या',r.pen);
+    box(A,216,186,14,'Previous Year School Name  /  पिछले वर्ष के विद्यालय का नाम',r.prevSchool);
+    sec('REMARK  /  टिप्पणी',235);
+    box(A,245,186,22,'Remark  /  टिप्पणी',r.remark,true);
+    /* signatures */
+    [['Parent / Guardian  (अभिभावक)',12],['Class Teacher  (कक्षा अध्यापक)',78],['Principal  (प्रधानाचार्य)',144]].forEach(([l,x])=>{doc.setDrawColor(...rgb('#8a8fb5'));doc.setLineWidth(.3);doc.line(x,278,x+54,278);T(l,x+27,282.5,{size:8,color:'#4a4f7a',align:'center'});});
+  });
+  const N=doc.getNumberOfPages();for(let p=1;p<=N;p++){doc.setPage(p);T(`Page ${p} of ${N}`,105,287.5,{size:7,color:'#9a9fc4',align:'center'});}
+  return doc;
+}
+
+/* ---------- views ---------- */
+function vDash(){
+  const rec=S.students.filter(s=>Date.now()-s.createdAt<864e5).length;
+  const cards=[['Total Students',S.students.length,'👩‍🎓'],['PDFs Processed',S.stats.pdfs,'📄'],['Duplicates Found',S.stats.dups,'⚠️'],['Recently Added (24h)',rec,'✨']];
+  const cl=classesOf(S.students);
+  return `<h2>Dashboard</h2><div class="cards">${cards.map(c=>`<div class="card stat"><span class="ico">${c[2]}</span><div><div class="muted">${c[0]}</div><div class="big">${c[1]}</div></div></div>`).join('')}</div>
+  <h3 class="sec">Class-wise students</h3>${cl.length?`<div class="chips">${cl.map(c=>`<button class="chip" data-a="goclass" data-c="${esc(c)}">Class ${esc(c)} <b>${S.students.filter(s=>s.cls===c).length}</b></button>`).join('')}</div>`:'<p class="muted">No students yet. Open <b>Upload PDFs</b> to add your first batch.</p>'}`;
+}
+const stepper=n=>`<div class="steps">${['1. Add Students','2. Remarks','3. Complete'].map((t,i)=>`<div class="step${i+1===n?' on':i+1<n?' done':''}">${i+1<n?'✓ ':''}${t}</div>`).join('')}</div>`;
+function vUp(){
+  const usable=S.pending.filter(r=>r.status!=='error').length;
+  const rows=S.pending.map(r=>`<tr><td class="small">${esc(r.fileName)}</td><td>${r.manual?'<span class="badge ok">Manual</span>':r.status==='ok'?'<span class="badge ok">OK</span>':r.status==='review'?`<span class="badge warn">Needs Review${r.usedOcr?' (OCR)':''}</span>`:`<span class="badge err">${esc(r.error)}</span>`}</td>
+    ${FIELDS.map(f=>`<td>${r.status==='error'?'':`<input data-pv="${r.tempId}|${f[0]}" class="${r.data[f[0]]?'':'miss'}" value="${esc(r.data[f[0]])}" placeholder="Field not found">`}</td>`).join('')}
+    <td><button class="btn ghost" data-a="rmrow" data-id="${r.tempId}">✕</button></td></tr>`).join('');
+  return `${stepper(1)}<h2>Add Students <span class="muted small">(PDF upload ya manual)</span></h2>
+  <div class="drop${S.drag?' on':''}" id="drop"><div class="big">Drag &amp; Drop Student PDFs Here</div><div class="muted">or</div>
+    <button class="btn primary" data-a="pick">Choose PDF Files</button><input id="file" type="file" accept="application/pdf,.pdf" multiple hidden>
+    <div class="muted">or</div><button class="btn" data-a="manual">➕ Add Student Manually</button> <button class="btn" data-a="pickimp">📄 Import Excel / CSV</button><input id="impfile" type="file" accept=".xlsx,.xls,.csv" hidden>
+    <div class="muted small">PDF only · max ${S.settings.maxMb} MB each · read on this computer, nothing is uploaded</div></div>
+  ${S.prog?`<div class="progress"><div style="width:${S.prog.done/S.prog.total*100}%"></div><span>Processing ${S.prog.done} of ${S.prog.total} PDFs...</span></div>`:''}
+  ${S.msg?`<div class="notice${S.msgBad?' bad':''}">${esc(S.msg)}</div>`:''}
+  ${S.pending.length?`<div class="bar"><h3>Preview &amp; review (${S.pending.length})</h3><span><button class="btn" data-a="clearpending">Clear</button> <button class="btn primary" data-a="addbatch" ${usable?'':'disabled'}>Submit &amp; Go to Remarks → (${usable})</button></span></div>
+  <div class="tablewrap"><table class="tbl"><thead><tr><th>File</th><th>Status</th>${FIELDS.map(f=>`<th>${f[1]}</th>`).join('')}<th></th></tr></thead><tbody>${rows}</tbody></table></div>`:''}`;
+}
+function listRows(){
+  const t=S.q.trim().toLowerCase();
+  let r=S.students.filter(s=>(!S.cls||s.cls===S.cls)&&(!S.sec||s.section===S.sec)&&(!t||[s.name,s.father,s.mother,s.admissionNo,s.pen,s.mobile,s.remark,s.prevSchool].some(v=>(v||'').toLowerCase().includes(t))));
+  const {k,dir}=S.sort; r.sort((a,b)=>(k==='cls'?compareStudents(a,b):(String(a[k]||'').localeCompare(String(b[k]||''),undefined,{numeric:true})||compareStudents(a,b)))*dir); return r;
+}
+function vList(){
+  const rows=listRows(),pages=Math.max(1,Math.ceil(rows.length/S.size)); if(S.page>=pages)S.page=pages-1;
+  const sl=rows.slice(S.page*S.size,S.page*S.size+S.size), cl=classesOf(S.students), secs=[...new Set(S.students.map(s=>s.section).filter(Boolean))].sort();
+  const th=(k,l)=>`<th class="sort" data-a="sort" data-k="${k}">${l}${S.sort.k===k?(S.sort.dir===1?' ▲':' ▼'):''}</th>`;
+  return `<div class="bar"><h2>Student List <span class="muted">(${rows.length})</span></h2>
+    <select data-sel="sec"><option value="">All sections</option>${secs.map(x=>`<option${x===S.sec?' selected':''}>${esc(x)}</option>`).join('')}</select></div>
+  <div class="chips"><button class="chip${S.cls?'':' on'}" data-a="chip" data-c="">All <b>${S.students.length}</b></button>${cl.map(c=>`<button class="chip${S.cls===c?' on':''}" data-a="chip" data-c="${esc(c)}">Class ${esc(c)} <b>${S.students.filter(s=>s.cls===c).length}</b></button>`).join('')}</div>
+  <div class="tablewrap"><table class="tbl"><thead><tr><th>Sr. No.</th>${th('name','Student Name')}${th('father','Father Name')}${th('mother','Mother Name')}${th('cls','Class')}${th('section','Section')}${th('dob','DOB')}${th('address','Address')}${th('mobile','Mobile')}${th('admissionNo','Admission No.')}${th('pen','PEN')}${th('aadhaar','Aadhaar No.')}${th('prevSchool','Previous School')}${th('remark','Remark')}<th>Actions</th></tr></thead><tbody>
+  ${sl.map((s,i)=>`<tr><td>${S.page*S.size+i+1}</td><td><b>${esc(s.name)||nf}</b></td><td>${esc(s.father)||nf}</td><td>${esc(s.mother)||nf}</td><td><span class="cb">${esc(s.cls)}</span></td><td>${esc(s.section)}</td><td>${esc(s.dob)}</td><td class="addr">${esc(s.address)}</td><td>${esc(s.mobile)}</td><td>${esc(s.admissionNo)}</td><td>${esc(s.pen)}</td><td>${aad(s)}</td><td>${esc(s.prevSchool)}</td><td>${esc(s.remark)}</td>
+  <td class="nowrap"><button class="btn sm" data-a="view" data-id="${s.id}">View</button> <button class="btn sm" data-a="edit" data-id="${s.id}">Edit</button> <button class="btn sm danger" data-a="del" data-id="${s.id}">Delete</button></td></tr>`).join('')||'<tr><td colspan="15" class="muted center">No students found</td></tr>'}
+  </tbody></table></div>
+  <div class="bar"><span class="muted">Rows per page <select data-sel="size">${[25,50,100,200].map(n=>`<option${n===S.size?' selected':''}>${n}</option>`).join('')}</select></span>
+  <span><button class="btn sm" data-a="prev" ${S.page===0?'disabled':''}>‹ Prev</button> Page ${S.page+1} / ${pages} <button class="btn sm" data-a="next" ${S.page>=pages-1?'disabled':''}>Next ›</button></span></div>`;
+}
+function vDup(){
+  return `<h2>Duplicates <span class="muted">(${S.dups.length} pending)</span></h2>${S.dups.length?'':'<p class="muted">No duplicates waiting for a decision.</p>'}`+
+  S.dups.map(d=>`<div class="card"><div class="bar"><b>⚠ Duplicate Student Detected</b><span class="muted small">${esc(d.fileName)} · ${esc(d.reason)}</span></div>
+  <div class="tablewrap"><table class="tbl"><thead><tr><th>Field</th><th>Existing Record</th><th>Newly Extracted Record</th></tr></thead><tbody>
+  ${FIELDS.filter(f=>f[0]!=='aadhaar').map(f=>{const a=d.existing[f[0]],b=d.draft[f[0]];return `<tr class="${a!==b?'diff':''}"><td>${f[1]}</td><td>${esc(a)||'—'}</td><td>${esc(b)||nf}</td></tr>`;}).join('')}</tbody></table></div>
+  <div class="bar"><span></span><span><button class="btn" data-a="resolve" data-id="${d.id}" data-r="skip">Skip</button> <button class="btn primary" data-a="resolve" data-id="${d.id}" data-r="update">Update Existing</button> <button class="btn" data-a="resolve" data-id="${d.id}" data-r="new">Add as New Student</button></span></div></div>`).join('');
+}
+const exportList=()=>S.students.filter(s=>!S.xcls||s.cls===S.xcls).sort(compareStudents);
+const csvList=()=>(!S.xcls&&S.xmode==='single')?exportList().sort(byAdm):exportList();
+function vExp(){
+  const cl=classesOf(S.students), n=exportList().length;
+  return `<h2>Export</h2><div class="card"><div class="form"><label class="wide">Kaunsi class export karni hai?
+    <select data-sel="xcls"><option value="">All classes</option>${cl.map(c=>`<option value="${esc(c)}"${S.xcls===c?' selected':''}>Class ${esc(c)} (${S.students.filter(s=>s.cls===c).length})</option>`).join('')}</select></label>
+    ${S.xcls?'':`<label class="wide">Excel layout
+    <select data-sel="xmode"><option value="both"${S.xmode==='both'?' selected':''}>Dono: ek "All Classes" sheet + har class ki alag sheet</option><option value="single"${S.xmode==='single'?' selected':''}>Sirf ek sheet: saari classes ek saath</option><option value="classwise"${S.xmode==='classwise'?' selected':''}>Sirf class-wise sheets</option></select></label>`}</div>
+  <p>${n} students export honge. Sr. No. Admission Number ke sequence se hai (Remark column ke saath). Aadhaar is <b>${S.settings.reveal?'exported in full':'masked'}</b> (change in Settings).</p>
+  <button class="btn primary" data-a="xlsx" ${n?'':'disabled'}>Export Excel</button> <button class="btn" data-a="csv" ${n?'':'disabled'}>Export CSV</button></div>`;
+}
+function vSet(){
+  return `<h2>Settings</h2>${cloudCard()}<div class="card form"><label class="wide"><span><input type="checkbox" data-chk="reveal" ${S.settings.reveal?'checked':''}> Authorised: allow viewing/exporting full Aadhaar (default: masked)</span></label>
+  <label>Max PDF size (MB)<input type="number" min="1" max="50" value="${S.settings.maxMb}" data-num="maxMb"></label>
+  <div class="wide"><p class="muted small">Is browser mein local copy bhi rehti hai. "Delete" dabane se sirf is browser ka data hatega — Google Sheet ka data safe rahega.</p><button class="btn danger" data-a="clearall">Delete all stored data</button></div></div>`;
+}
+const byAdm=(a,b)=>admCmp(a,b)||compareStudents(a,b);
+const remList=()=>{const ids=new Set(S.batch.ids);return (S.remAll?S.students:S.students.filter(s=>ids.has(s.id))).slice().sort(S.remAll?compareStudents:byAdm);};
+const dv=(s,k)=>{const d=S.remDraft[s.id];return d&&d[k]!==undefined?d[k]:(s[k]||'');};
+function vRem(){
+  const l=remList();
+  return `${stepper(2)}<h2>Remarks</h2>${S.msg?`<div class="notice${S.msgBad?' bad':''}">${esc(S.msg)}</div>`:''}
+  <div class="bar"><span class="muted">${S.remAll?'Saare students':'Abhi submit kiye hue students'} (${l.length}) · Admission No. ke sequence mein</span>
+  <label><input type="checkbox" data-chk="remall" ${S.remAll?'checked':''}> Show all students</label></div>
+  ${l.length?`<div class="card"><div class="bar" style="margin:0"><span class="muted small">Sabhi ka Previous Year School same hai? Ek baar likho, sab mein fill ho jayega:</span>
+  <span><input id="psall" class="search" style="min-width:260px" placeholder="Previous year school name / पिछले वर्ष के विद्यालय का नाम"> <button class="btn" data-a="applyps">Apply to all</button></span></div></div>
+  <div class="tablewrap"><table class="tbl"><thead><tr><th>Sr. No.</th><th>Admission No.</th><th>Student Name</th><th>Class</th><th>Previous Year School / पिछला विद्यालय</th><th>Remark</th></tr></thead><tbody>
+  ${l.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.admissionNo)}</td><td><b>${esc(s.name)}</b></td><td><span class="cb">${esc(s.cls)}</span> ${esc(s.section)}</td><td><input style="min-width:260px" data-ps="${s.id}" value="${esc(dv(s,'prevSchool'))}" placeholder="Previous year school name"></td><td><input style="min-width:240px" data-rm="${s.id}" value="${esc(dv(s,'remark'))}" placeholder="Remark likho (optional)"></td></tr>`).join('')}</tbody></table></div>
+  <div class="bar"><span></span><button class="btn primary" data-a="saverem">Save Remarks &amp; Continue →</button></div>`
+  :`<div class="card"><p class="muted">Abhi koi student submit nahi hua. Pehle Step 1 mein students add karo, ya upar "Show all students" tick karo.</p><button class="btn primary" data-a="nav" data-v="up">Go to Add Students</button></div>`}`;
+}
+function vDone(){
+  const b=S.batch,l=S.students.filter(s=>b.ids.includes(s.id)).sort(byAdm);
+  if(!l.length)return `${stepper(3)}<h2>Complete</h2><div class="notice bad">Abhi koi batch nahi hai. Pehle students add karo (Step 1).</div><button class="btn primary" data-a="nav" data-v="up">Go to Add Students</button>`;
+  if(!b.saved)return `${stepper(3)}<h2>Complete</h2><div class="notice bad">Pehle Remarks save karo (Step 2).</div><button class="btn primary" data-a="nav" data-v="rem">Go to Remarks</button>`;
+  const withR=l.filter(s=>s.remark).length;
+  return `${stepper(b.completed?4:3)}<h2>Complete</h2>${S.msg?`<div class="notice">${esc(S.msg)}</div>`:''}
+  <div class="card"><b>${l.length}</b> students · <b>${withR}</b> remarks saved · <b>${l.length-withR}</b> without remark</div>
+  <div class="tablewrap"><table class="tbl"><thead><tr><th>Sr. No.</th><th>Admission No.</th><th>Student Name</th><th>Class</th><th>Previous Year School</th><th>Remark</th></tr></thead><tbody>
+  ${l.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.admissionNo)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.cls)} ${esc(s.section)}</td><td>${esc(s.prevSchool)||'—'}</td><td>${esc(s.remark)||'—'}</td></tr>`).join('')}</tbody></table></div>
+  <div class="bar"><span></span><span>${b.completed?`<button class="btn" data-a="nav" data-v="exp">⬇️ Go to Export</button> <button class="btn primary" data-a="newbatch">➕ Add More Students</button>`:`<button class="btn" data-a="nav" data-v="rem">← Back to Remarks</button> <button class="btn good" data-a="complete">✔ Complete</button>`}</span></div>`;
+}
+const VIEWS={dash:vDash,up:vUp,rem:vRem,done:vDone,list:vList,dup:vDup,exp:vExp,pdf:vPdf,set:vSet};
+function render(){
+  $('side').innerHTML=`<div class="brand">🎓 Student PDF<br>Data Extractor<small>School records, made simple</small></div>`+NAV.map(n=>`<button class="nav${S.view===n[0]?' on':''}" data-a="nav" data-v="${n[0]}"><span>${n[1]} ${n[2]}</span>${n[0]==='dup'&&S.dups.length?`<span class="pill">${S.dups.length}</span>`:''}</button>`).join('');
+  $('content').innerHTML=VIEWS[S.view]();
+}
+const go=v=>{S.view=v;$('side').classList.remove('open');render();};
+function modal(title,body){$('modal').innerHTML=`<div class="overlay" data-a="closemodal"><div class="modal" id="mbox"><div class="modal-h"><h3>${title}</h3><button class="btn ghost" data-a="closemodal">✕</button></div>${body}</div></div>`;}
+const closeModal=()=>{$('modal').innerHTML='';};
+/* in-page confirm box (native confirm() is blocked in many phone / in-app browsers) */
+let onOk=null;
+function ask(msg,label,fn){onOk=fn;modal('Please confirm',`<p>${esc(msg)}</p><div class="bar"><span></span><span><button class="btn" data-a="closemodal">Cancel</button> <button class="btn primary" data-a="confirmok">${esc(label)}</button></span></div>`);}
+
+/* ---------- actions ---------- */
+async function handleFiles(files){
+  const list=[...files];if(!list.length)return; S.msg='';S.msgBad=false;S.prog={done:0,total:list.length};render();let bad=0,rev=0;
+  for(let i=0;i<list.length;i++){ // one PDF at a time, so one bad file never stops the batch
+    const r=await extractPdf(list[i],S.settings.maxMb);S.pending.push(r);S.prog.done=i+1;r.status==='error'?bad++:r.status==='review'&&rev++;
+    if(S.view==='up')render();
+  }
+  S.stats.pdfs+=list.length;await saveStats();S.prog=null;
+  S.msg=`${list.length} PDFs processed · ${list.length-bad} read · ${rev} need review · ${bad} could not be read`;S.msgBad=bad>0;render();
+}
+async function addBatch(){
+  const list=[...S.students],added=[],found=[],keep=[];let bad=0;
+  for(const r of S.pending){
+    if(r.status==='error'){bad++;continue;}
+    const d={...emptyDraft(),...Object.fromEntries(Object.entries(r.data).map(([k,v])=>[k,clean(v)]))};
+    if(!d.name){keep.push(r);continue;} /* name is required */
+    const hit=findDuplicate(d,list);
+    if(hit)found.push({id:uid(),fileName:r.fileName,draft:d,existing:hit.existing,reason:hit.reason});
+    else{const s={...d,id:uid(),createdAt:Date.now()+added.length};list.push(s);added.push(s);}
+  }
+  await DB.putMany(added);S.students=list;
+  if(found.length){S.dups.push(...found);S.stats.dups+=found.length;await saveDups();await saveStats();}
+  S.pending=keep;
+  if(added.length){const old=S.batch.completed?[]:S.batch.ids;S.batch={ids:[...old,...added.map(s=>s.id)],saved:false,completed:false};await saveBatch();}
+  S.msg=`✓ ${added.length} Students Submitted · ⚠ ${found.length} Duplicates Found${found.length?' (see Duplicates)':''} · ⚠ ${bad} PDF Could Not Be Read`+(keep.length?` · ✎ ${keep.length} row(s) without Student Name were kept in Step 1`:'');
+  S.msgBad=keep.length>0;S.view=added.length?'rem':'up';render();
+}
+const find=id=>S.students.find(s=>s.id===id);
+const download=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);};
+const exName=ext=>`students_${S.xcls?'Class_'+S.xcls:'All_Classes'}_${new Date().toISOString().slice(0,10)}.${ext}`;
+const ACT={
+  menu:()=>$('side').classList.toggle('open'),
+  nav:d=>{S.msg='';go(d.v);},
+  goclass:d=>{S.cls=d.c;S.page=0;go('list');},
+  chip:d=>{S.cls=d.c;S.page=0;render();},
+  sort:d=>{S.sort=S.sort.k===d.k?{k:d.k,dir:-S.sort.dir}:{k:d.k,dir:1};render();},
+  prev:()=>{S.page--;render();}, next:()=>{S.page++;render();},
+  pick:()=>$('file').click(),
+  rmrow:d=>{S.pending=S.pending.filter(r=>r.tempId!==d.id);render();},
+  clearpending:()=>{S.pending=[];S.msg='';render();},
+  addbatch:addBatch,
+  pickx:()=>$('pdffile').click(),
+  pickimp:()=>$('impfile').click(),
+  async clconnect(){const c={url:S.cl.url.trim(),key:S.cl.key.trim()};if(!c.url||!c.key){S.cl.msg='URL aur Secret key dono bharo.';S.cl.bad=true;render();return;}
+    Cloud.cfg=c;Cloud.loaded=false;await DB.set('cloud',c);S.cl.msg='Connect ho raha hai…';S.cl.bad=false;render();
+    try{await Cloud.sync('first');S.cl.msg='✓ Connect ho gaya. Ab data apne aap Google Sheet mein save hoga.';S.cl.bad=false;}
+    catch(e){S.cl.msg='Connect nahi hua: '+e.message;S.cl.bad=true;}setCloudSt();render();},
+  async clsync(){try{await Cloud.sync('manual');S.cl.msg='✓ Sync ho gaya.';S.cl.bad=false;}catch(e){S.cl.msg='Sync nahi hua: '+e.message;S.cl.bad=true;}render();},
+  async cloff(){Cloud.cfg={url:'',key:''};Cloud.loaded=false;Cloud.dirty=false;await DB.set('cloud',Cloud.cfg);await DB.set('cloudDirty',false);S.cl.url='';S.cl.key='';S.cl.msg='Cloud disconnect ho gaya (Google Sheet ka data safe hai).';S.cl.bad=false;setCloudSt();render();},
+  async copygs(){const t=GS_CODE();try{await navigator.clipboard.writeText(t);S.cl.msg='✓ Code copy ho gaya. Apps Script mein paste karo.';S.cl.bad=false;render();}catch(e){const a=$('gsview');if(a){a.select();document.execCommand('copy');}}},
+  bkdl:()=>download(new Blob([JSON.stringify({app:'student-tool',version:1,students:S.students,meta:{school:S.pdf.school,session:S.pdf.session}})],{type:'application/json'}),`student_backup_${new Date().toISOString().slice(0,10)}.json`),
+  bkpick:()=>$('bkfile').click(),
+  usestored:()=>{S.pdf.rows=S.students.map(x=>({...emptyDraft(),...x,cls:normCls(x.cls),aadhaar:S.settings.reveal?x.aadhaar:maskAadhaar(x.aadhaar)}));S.pdf.src='tool';S.pdf.cls='';S.pdf.msg='✓ '+S.pdf.rows.length+' students is tool se liye gaye.';S.pdf.bad=false;render();},
+  genpdf:()=>{const P=S.pdf;if(!window.jspdf){P.msg='PDF library load nahi hui (internet chahiye). Page refresh karke dobara try karo.';P.bad=true;render();return;}
+    try{const rows=pdfRows();buildProfilePdf(rows,P).save(`student_profiles_${P.cls?'Class_'+P.cls:'All_Classes'}_${new Date().toISOString().slice(0,10)}.pdf`);P.msg='✓ '+rows.length+' pages ka PDF ban gaya.';P.bad=false;}
+    catch(e){P.msg='PDF nahi ban paya: '+e.message;P.bad=true;}render();},
+  manual:()=>{S.pending.unshift({tempId:uid(),fileName:'Manual entry',manual:true,status:'review',missing:[],data:emptyDraft(),usedOcr:false});render();},
+  async saverem(){const l=remList();const ch=[];
+    for(const s of l){const d=S.remDraft[s.id];if(d){const n={...s};if(d.remark!==undefined)n.remark=clean(d.remark);if(d.prevSchool!==undefined)n.prevSchool=clean(d.prevSchool);ch.push(n);}}
+    if(ch.length){await DB.putMany(ch);const m=new Map(ch.map(x=>[x.id,x]));S.students=S.students.map(x=>m.get(x.id)||x);}
+    S.remDraft={};S.batch.saved=true;await saveBatch();S.msg='✓ Remarks aur Previous Year School save ho gaye. Ab Complete karo.';S.msgBad=false;go('done');},
+  async complete(){const now=Date.now();const l=S.students.filter(s=>S.batch.ids.includes(s.id)).map(s=>({...s,completed:true,completedAt:now}));
+    await DB.putMany(l);const m=new Map(l.map(x=>[x.id,x]));S.students=S.students.map(x=>m.get(x.id)||x);
+    S.batch.completed=true;await saveBatch();S.msg='✓ '+l.length+' students complete ho gaye. Export se Excel/CSV nikal sakte ho.';render();},
+  applyps(){const v=clean($('psall').value);if(!v)return;for(const x of remList())(S.remDraft[x.id]=S.remDraft[x.id]||{}).prevSchool=v;render();},
+  async newbatch(){S.batch={ids:[],saved:false,completed:false};await saveBatch();S.pending=[];S.msg='';S.remAll=false;go('up');},
+  view(d){const s=find(d.id);S.show=false;viewModal(s);},
+  edit(d){const s=find(d.id);modal('Edit Student',`<div class="form">${FIELDS.map(f=>`<label class="${f[0]==='address'?'wide':''}">${f[1]}${f[0]==='address'?`<textarea rows="2" data-e="${f[0]}">${esc(s[f[0]])}</textarea>`:`<input data-e="${f[0]}" value="${esc(s[f[0]])}">`}</label>`).join('')}<label class="wide">Previous Year School Name<input data-e="prevSchool" value="${esc(s.prevSchool)}"></label><label class="wide">Remark<textarea rows="2" data-e="remark">${esc(s.remark)}</textarea></label></div>
+    <div class="bar"><span></span><span><button class="btn" data-a="closemodal">Cancel</button> <button class="btn primary" data-a="saveedit" data-id="${s.id}">Save</button></span></div>`);},
+  async saveedit(d){const s={...find(d.id)};document.querySelectorAll('[data-e]').forEach(el=>s[el.dataset.e]=clean(el.value));
+    await DB.putMany([s]);S.students=S.students.map(x=>x.id===s.id?s:x);closeModal();render();},
+  del(d){const s=find(d.id);if(!s)return;ask('Delete '+(s.name||'this student')+'? This cannot be undone.','Yes, Delete',async()=>{
+    try{await DB.remove(d.id);S.students=S.students.filter(x=>x.id!==d.id);}catch(e){alert('Could not delete: '+e);}render();});},
+  async confirmok(){const f=onOk;onOk=null;closeModal();if(f)await f();},
+  toggleaad:d=>{S.show=!S.show;viewModal(find(d.id));},
+  closemodal:(d,e)=>{if(e.target===e.currentTarget)closeModal();},
+  async resolve(d){const x=S.dups.find(i=>i.id===d.id);if(!x)return;const inBatch=id=>{if(S.batch.completed)S.batch={ids:[],saved:false,completed:false};if(!S.batch.ids.includes(id))S.batch.ids.push(id);S.batch.saved=false;};
+    if(d.r==='update'){const s=mergeInto(x.existing,x.draft);await DB.putMany([s]);S.students=S.students.map(a=>a.id===s.id?s:a);inBatch(s.id);}
+    if(d.r==='new'){const s={...x.draft,id:uid(),createdAt:Date.now()};await DB.putMany([s]);S.students.push(s);inBatch(s.id);}
+    S.dups=S.dups.filter(i=>i.id!==d.id);await saveDups();await saveBatch();render();},
+  xlsx:()=>{XLSX.writeFile(makeWorkbook(XLSX,exportList(),S.settings.reveal,S.xcls?'single':S.xmode,S.xcls?'Class '+S.xcls:'All Classes'),exName('xlsx'));},
+  csv:()=>download(new Blob([toCsv(csvList(),S.settings.reveal)],{type:'text/csv;charset=utf-8'}),exName('csv')),
+  clearall(){ask('Delete ALL students and settings from this browser? This cannot be undone.','Yes, Delete Everything',async()=>{await DB.clear();Cloud.cfg={url:'',key:''};Cloud.loaded=false;Cloud.dirty=false;S.cl.url='';S.cl.key='';setCloudSt();
+    Object.assign(S,{batch:{ids:[],saved:false,completed:false},remDraft:{},students:[],dups:[],stats:{pdfs:0,dups:0},settings:{reveal:false,maxMb:10},pending:[],msg:''});render();});},
+};
+function viewModal(s){
+  modal('Student Details',`<dl class="dl">${FIELDS.map(f=>`<div><dt>${f[1]}</dt><dd>${f[0]==='aadhaar'?aad(s,S.show)+(S.settings.reveal&&s.aadhaar?` <button class="btn sm" data-a="toggleaad" data-id="${s.id}">${S.show?'Hide':'Show'}</button>`:''):(esc(s[f[0]])||nf)}</dd></div>`).join('')}
+  <div><dt>Previous Year School</dt><dd>${esc(s.prevSchool)||'—'}</dd></div><div><dt>Remark</dt><dd>${esc(s.remark)||'—'}</dd></div><div><dt>Academic Year</dt><dd>${esc(s.year)||'—'}</dd></div><div><dt>UDISE Code</dt><dd>${esc(s.udise)||'—'}</dd></div></dl>`);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&ACT[b.dataset.a])ACT[b.dataset.a](b.dataset,{target:e.target,currentTarget:b});});
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.dataset.pv){const [id,k]=t.dataset.pv.split('|');const r=S.pending.find(x=>x.tempId===id);if(r){r.data[k]=t.value;t.classList.toggle('miss',!t.value.trim());}}
+  if(t.dataset.po){S.pdf[t.dataset.po]=t.value;DB.set('pdfopt',{school:S.pdf.school,session:S.pdf.session});Cloud.schedule();}
+  if(t.dataset.cl)S.cl[t.dataset.cl]=t.value;
+  if(t.dataset.rm||t.dataset.ps){const id=t.dataset.rm||t.dataset.ps,k=t.dataset.rm?'remark':'prevSchool';(S.remDraft[id]=S.remDraft[id]||{})[k]=t.value;}
+  if(t.id==='q'){S.q=t.value;S.page=0;if(S.view!=='list')S.view='list';render();}});
+document.addEventListener('change',async e=>{const t=e.target;
+  if(t.id==='file'){handleFiles(t.files);t.value='';}
+  if(t.id==='bkfile'&&t.files[0]){const f=t.files[0];t.value='';try{const j=JSON.parse(await f.text());const l=(j.students||[]).filter(x=>x&&x.id).map(fixStu);if(!l.length)throw 0;
+      const m=mergeLists(S.students,l);await DB.replaceAll(m);S.students=m;if(j.meta){if(j.meta.school&&!S.pdf.school)S.pdf.school=j.meta.school;}Cloud.schedule();S.cl.msg='✓ Backup restore ho gaya ('+l.length+' students).';S.cl.bad=false;}
+    catch(err){S.cl.msg='Backup file padh nahi paye.';S.cl.bad=true;}render();}
+  if(t.id==='impfile'&&t.files[0]){const f=t.files[0];t.value='';
+    try{const rows=await readStudentSheet(f);if(!rows.length)throw 0;const keys=Object.keys(emptyDraft());let canc=0;
+      for(const r of rows.reverse()){const data={};keys.forEach(k=>data[k]=r[k]||'');const cx=/cancel/i.test(r.status||'');if(cx)canc++;
+        S.pending.unshift({tempId:uid(),fileName:f.name+(cx?' (Cancelled)':''),status:(!cx&&data.name&&data.cls&&data.dob&&data.admissionNo)?'ok':'review',missing:[],data,usedOcr:false});}
+      S.msg=`✓ ${rows.length} students file se mil gaye${canc?' ('+canc+' Cancelled - dhyan se dekho)':''}. Check karke Submit karo.`;S.msgBad=false;}
+    catch(err){S.msg='File padh nahi paye. Excel/CSV mein "Student Name" wala column hona chahiye.';S.msgBad=true;}render();}
+  if(t.id==='pdffile'&&t.files[0]){const f=t.files[0];t.value='';try{const rows=await readStudentSheet(f);if(!rows.length)throw 0;S.pdf.rows=rows;S.pdf.src=f.name;S.pdf.cls='';S.pdf.status='';S.pdf.msg='✓ '+rows.length+' students mil gaye ('+f.name+')';S.pdf.bad=false;}
+    catch(err){S.pdf.msg='Excel file padh nahi paye. Isi tool ke Export se bani file upload karo (Student Name column zaroori hai).';S.pdf.bad=true;}render();}
+  if(t.dataset.psel){S.pdf[t.dataset.psel]=t.value;render();}
+  if(t.dataset.sel){const k=t.dataset.sel;S[k]=k==='size'?+t.value:t.value;S.page=0;render();}
+  if(t.dataset.chk==='remall'){S.remAll=t.checked;render();}
+  if(t.dataset.chk==='reveal'){const on=t.checked;
+    if(!on){S.settings.reveal=false;await DB.set('settings',S.settings);render();}
+    else{render();ask('Allow full Aadhaar numbers to be shown and exported? Only enable this for authorised staff.','Yes, Allow',async()=>{S.settings.reveal=true;await DB.set('settings',S.settings);render();});}}
+  if(t.dataset.num){S.settings.maxMb=Math.min(50,Math.max(1,+t.value||10));await DB.set('settings',S.settings);render();}});
+document.addEventListener('dragover',e=>{if($('drop')){e.preventDefault();$('drop').classList.add('on');}});
+document.addEventListener('dragleave',e=>{if($('drop')&&!e.relatedTarget)$('drop').classList.remove('on');});
+document.addEventListener('drop',e=>{if($('drop')){e.preventDefault();$('drop').classList.remove('on');if(S.view==='up')handleFiles(e.dataTransfer.files);}});
+
+/* ---------- start ---------- */
+(async()=>{
+  if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  try{S.students=await DB.list();S.dups=await DB.get('dups',[]);S.stats=await DB.get('stats',{pdfs:0,dups:0});S.batch=await DB.get('batch',S.batch);Object.assign(S.pdf,await DB.get('pdfopt',{}));S.settings=await DB.get('settings',S.settings);Cloud.cfg=await DB.get('cloud',Cloud.cfg);S.cl.url=Cloud.cfg.url;S.cl.key=Cloud.cfg.key;}
+  catch(e){S.msg='Browser storage is unavailable (private mode?). Data will not be saved.';S.msgBad=true;}
+  render();setCloudSt();
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+  cloudInit();
+})();
+</script>
+</body></html>
